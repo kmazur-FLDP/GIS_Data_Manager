@@ -35,13 +35,34 @@ function DatasetDetails() {
       <h2>Dataset Details</h2>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <tbody>
-          {Object.entries(dataset).map(([key, value]) => (
-            <tr key={key}>
-              <td style={{ padding: '0.5rem', fontWeight: 'bold', borderBottom: '1px solid #444' }}>{key}</td>
-              <td style={{ padding: '0.5rem', borderBottom: '1px solid #444' }}>
-                {Array.isArray(value) ? value.join(', ') : value?.toString()}
-              </td>
-            </tr>
+          {[
+            ['Name', dataset.name],
+            ['Category', dataset.category],
+            ['Owner', dataset.owner],
+            ['Coverage', dataset.coverage?.join(', ')],
+            ['Tags', dataset.tags?.join(', ')],
+            ['Data Format', dataset.data_format],
+            ['Source Type', dataset.source_type],
+            ['Source URL', dataset.source_url],
+            ['Local Path', dataset.local_path],
+            ['Last Updated', dataset.last_updated],
+            ['Date Added', dataset.date_added],
+            ['License', dataset.license],
+            ['Contact', dataset.contact],
+            ['Storage Location', dataset.storage_location],
+            ['Version', dataset.version],
+            ['Previous Version URL', dataset.previous_version_url],
+            ['Status', dataset.status],
+            ['Refresh Frequency', dataset.refresh_frequency],
+            ['Notes', dataset.notes],
+            ['Description', dataset.description],
+          ].map(([label, value]) => (
+            value ? (
+              <tr key={label}>
+                <td style={{ padding: '0.5rem', fontWeight: 'bold', borderBottom: '1px solid #444' }}>{label}</td>
+                <td style={{ padding: '0.5rem', borderBottom: '1px solid #444' }}>{value}</td>
+              </tr>
+            ) : null
           ))}
         </tbody>
       </table>

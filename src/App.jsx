@@ -5,6 +5,7 @@ import { supabase } from './services/supabaseClient'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import DatasetDetails from './components/DatasetDetails'
 import Login from './components/Login'
+import Dashboard from './components/Dashboard'
 
 function App() {
   const [datasets, setDatasets] = useState([])
@@ -137,6 +138,18 @@ function App() {
                         {editingDataset ? 'Edit Dataset' : 'Add Dataset'}
                       </button>
                       <button
+                        onClick={() => setActiveTab('dashboard')}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: activeTab === 'dashboard' ? '#333' : '#222',
+                          color: '#f0f0f0',
+                          border: '1px solid #444',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Dashboard
+                      </button>
+                      <button
                         onClick={handleLogout}
                         style={{
                           padding: '0.5rem 1rem',
@@ -203,6 +216,9 @@ function App() {
                           onEdit={handleEditDataset}
                         />
                       </>
+                    )}
+                    {activeTab === 'dashboard' && (
+                      <Dashboard />
                     )}
                   </>
                 } />

@@ -15,6 +15,15 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
     last_updated: '',
     notes: '',
     owner: '',
+    license: '',
+    contact: '',
+    storage_location: '',
+    date_added: '',
+    version: '',
+    previous_version_url: '',
+    status: '',
+    refresh_frequency: '',
+    update_type: 'Updated',
   })
 
   useEffect(() => {
@@ -23,6 +32,15 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
         ...editingDataset,
         tags: editingDataset.tags?.join(', ') || '',
         coverage: editingDataset.coverage?.join(', ') || '',
+        license: editingDataset.license || '',
+        contact: editingDataset.contact || '',
+        storage_location: editingDataset.storage_location || '',
+        date_added: editingDataset.date_added || '',
+        version: editingDataset.version || '',
+        previous_version_url: editingDataset.previous_version_url || '',
+        status: editingDataset.status || '',
+        refresh_frequency: editingDataset.refresh_frequency || '',
+        update_type: editingDataset.update_type || 'Updated',
       })
     }
   }, [editingDataset])
@@ -72,6 +90,15 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
         last_updated: '',
         notes: '',
         owner: '',
+        license: '',
+        contact: '',
+        storage_location: '',
+        date_added: '',
+        version: '',
+        previous_version_url: '',
+        status: '',
+        refresh_frequency: '',
+        update_type: 'Updated',
       })
       setEditingDataset && setEditingDataset(null)
       fetchDatasets && fetchDatasets()
@@ -351,6 +378,107 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
           <option value="FLDP">FLDP</option>
         </select>
       </div>
+
+      {/* Update Type Dropdown */}
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ color: '#f0f0f0' }}>Update Type:</label>
+        <select
+          name="update_type"
+          value={formData.update_type}
+          onChange={handleChange}
+          style={{
+            width: '100%',
+            padding: '10px',
+            backgroundColor: '#2a2a2a',
+            border: '1px solid #444',
+            color: '#f0f0f0',
+            borderRadius: '4px',
+            marginTop: '0.5rem'
+          }}
+        >
+          <option value="Updated">Updated</option>
+          <option value="Static">Static</option>
+        </select>
+      </div>
+
+      {(() => {
+        const inputStyle = {
+          width: '100%',
+          padding: '10px',
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #444',
+          color: '#f0f0f0',
+          borderRadius: '4px',
+          marginTop: '0.5rem'
+        }
+        return (
+          <>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>License:</label>
+              <select name="license" value={formData.license} onChange={handleChange} style={inputStyle}>
+                <option value="">Select License</option>
+                <option value="Internal">Internal</option>
+                <option value="Public">Public</option>
+                <option value="Vendor-Restricted">Vendor-Restricted</option>
+                <option value="Open Source">Open Source</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Contact:</label>
+              <input type="text" name="contact" value={formData.contact} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Storage Location:</label>
+              <select name="storage_location" value={formData.storage_location} onChange={handleChange} style={inputStyle}>
+                <option value="">Select Location</option>
+                <option value="Supabase">Supabase</option>
+                <option value="Dropbox">Dropbox</option>
+                <option value="FLDP Server">FLDP Server</option>
+                <option value="External Link">External Link</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Date Added:</label>
+              <input type="date" name="date_added" value={formData.date_added} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Version:</label>
+              <input type="text" name="version" value={formData.version} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Previous Version URL:</label>
+              <input type="text" name="previous_version_url" value={formData.previous_version_url} onChange={handleChange} style={inputStyle} />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Status:</label>
+              <select name="status" value={formData.status} onChange={handleChange} style={inputStyle}>
+                <option value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Archived">Archived</option>
+                <option value="Deprecated">Deprecated</option>
+                <option value="Replaced">Replaced</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ color: '#f0f0f0' }}>Refresh Frequency:</label>
+              <select name="refresh_frequency" value={formData.refresh_frequency} onChange={handleChange} style={inputStyle}>
+                <option value="">Select Frequency</option>
+                <option value="Never">Never</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="Yearly">Yearly</option>
+              </select>
+            </div>
+          </>
+        )
+      })()}
 
       <button
         type="submit"
