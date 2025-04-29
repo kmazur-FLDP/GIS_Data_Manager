@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import DatasetForm from './components/DatasetForm'
 import DatasetTable from './components/DatasetTable'
 import { supabase } from './services/supabaseClient'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import DatasetDetails from './components/DatasetDetails'
+import Login from './components/Login'
 
 function App() {
   const [datasets, setDatasets] = useState([])
@@ -11,10 +12,15 @@ function App() {
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' })
   const [editingDataset, setEditingDataset] = useState(null)
   const [activeTab, setActiveTab] = useState('view')
+  const [user, setUser] = useState(null)
 
   const handleEditDataset = (dataset) => {
     setEditingDataset(dataset)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
   }
 
   const fetchDatasets = async () => {
@@ -55,6 +61,23 @@ function App() {
   }
 
   useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user || null)
+    }
+
+    getSession()
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+    })
+
+    return () => {
+      listener?.subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
     fetchDatasets()
   }, [])
 
@@ -78,93 +101,115 @@ function App() {
           paddingRight: '2rem'
         }}>
           <Routes>
-            <Route path="/" element={
+            {!user ? (
               <>
-                <h1>GIS Data Manager</h1>
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                  <button
-                    onClick={() => setActiveTab('view')}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      backgroundColor: activeTab === 'view' ? '#333' : '#222',
-                      color: '#f0f0f0',
-                      border: '1px solid #444',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    View Datasets
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('add')}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      backgroundColor: activeTab === 'add' ? '#333' : '#222',
-                      color: '#f0f0f0',
-                      border: '1px solid #444',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {editingDataset ? 'Edit Dataset' : 'Add Dataset'}
-                  </button>
-                </div>
-
-                {activeTab === 'add' && (
-                  <DatasetForm
-                    fetchDatasets={fetchDatasets}
-                    editingDataset={editingDataset}
-                    setEditingDataset={setEditingDataset}
-                  />
-                )}
-
-                {activeTab === 'view' && (
+                <Route path="/login" element={<Login />} />
+                <Route path="*" element={<Login />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={
                   <>
-                    <div style={{ margin: '1rem 0' }}>
-                      <label style={{ marginRight: '1rem' }}>
-                        Owner:
-                        <select name="owner" value={filters.owner} onChange={handleFilterChange} style={{ marginLeft: '0.5rem' }}>
-                          <option value="">All</option>
-                          <option value="Personal">Personal</option>
-                          <option value="FLDP">FLDP</option>
-                        </select>
-                      </label>
-                      <label style={{ marginRight: '1rem' }}>
-                        Category:
-                        <select name="category" value={filters.category} onChange={handleFilterChange} style={{ marginLeft: '0.5rem' }}>
-                          <option value="">All</option>
-                          <option value="Parcels">Parcels</option>
-                          <option value="Zoning">Zoning</option>
-                          <option value="Environmental">Environmental</option>
-                          <option value="Aerials">Aerials</option>
-                          <option value="Utilities">Utilities</option>
-                          <option value="Floodplain">Floodplain</option>
-                        </select>
-                      </label>
-                      <label>
-                        Search:
-                        <input
-                          type="text"
-                          name="search"
-                          value={filters.search}
-                          onChange={handleFilterChange}
-                          placeholder="Search name or description"
-                          style={{ marginLeft: '0.5rem', padding: '0.2rem' }}
-                        />
-                      </label>
+                    <h1>GIS Data Manager</h1>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                      <button
+                        onClick={() => setActiveTab('view')}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: activeTab === 'view' ? '#333' : '#222',
+                          color: '#f0f0f0',
+                          border: '1px solid #444',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        View Datasets
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('add')}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: activeTab === 'add' ? '#333' : '#222',
+                          color: '#f0f0f0',
+                          border: '1px solid #444',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {editingDataset ? 'Edit Dataset' : 'Add Dataset'}
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: '#922',
+                          color: '#fff',
+                          border: '1px solid #c44',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Logout
+                      </button>
                     </div>
 
-                    <DatasetTable
-                      datasets={datasets}
-                      filters={filters}
-                      sortConfig={sortConfig}
-                      onSort={handleSort}
-                      onDelete={handleDeleteDataset}
-                      onEdit={handleEditDataset}
-                    />
+                    {activeTab === 'add' && (
+                      <DatasetForm
+                        fetchDatasets={fetchDatasets}
+                        editingDataset={editingDataset}
+                        setEditingDataset={setEditingDataset}
+                      />
+                    )}
+
+                    {activeTab === 'view' && (
+                      <>
+                        <div style={{ margin: '1rem 0' }}>
+                          <label style={{ marginRight: '1rem' }}>
+                            Owner:
+                            <select name="owner" value={filters.owner} onChange={handleFilterChange} style={{ marginLeft: '0.5rem' }}>
+                              <option value="">All</option>
+                              <option value="Personal">Personal</option>
+                              <option value="FLDP">FLDP</option>
+                            </select>
+                          </label>
+                          <label style={{ marginRight: '1rem' }}>
+                            Category:
+                            <select name="category" value={filters.category} onChange={handleFilterChange} style={{ marginLeft: '0.5rem' }}>
+                              <option value="">All</option>
+                              <option value="Parcels">Parcels</option>
+                              <option value="Zoning">Zoning</option>
+                              <option value="Environmental">Environmental</option>
+                              <option value="Aerials">Aerials</option>
+                              <option value="Utilities">Utilities</option>
+                              <option value="Floodplain">Floodplain</option>
+                            </select>
+                          </label>
+                          <label>
+                            Search:
+                            <input
+                              type="text"
+                              name="search"
+                              value={filters.search}
+                              onChange={handleFilterChange}
+                              placeholder="Search name or description"
+                              style={{ marginLeft: '0.5rem', padding: '0.2rem' }}
+                            />
+                          </label>
+                        </div>
+
+                        <DatasetTable
+                          datasets={datasets}
+                          filters={filters}
+                          sortConfig={sortConfig}
+                          onSort={handleSort}
+                          onDelete={handleDeleteDataset}
+                          onEdit={handleEditDataset}
+                        />
+                      </>
+                    )}
                   </>
-                )}
+                } />
+                <Route path="/details/:id" element={<DatasetDetails />} />
+                <Route path="*" element={<Login />} />
               </>
-            } />
-            <Route path="/details/:id" element={<DatasetDetails />} />
+            )}
           </Routes>
         </div>
       </div>
