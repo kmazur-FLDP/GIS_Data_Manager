@@ -39,7 +39,7 @@ function DatasetDetails() {
             ['Name', dataset.name],
             ['Category', dataset.category],
             ['Owner', dataset.owner],
-            ['Coverage', dataset.coverage?.join(', ')],
+            ['Coverage', Array.isArray(dataset.coverage) ? dataset.coverage.join(', ') : '-'],
             ['Tags', dataset.tags?.join(', ')],
             ['Data Format', dataset.data_format],
             ['Source Type', dataset.source_type],

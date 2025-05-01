@@ -3,6 +3,7 @@ import { useState } from 'react'
 function DatasetTable({ datasets, onEdit, onDelete }) {
   const navigate = useNavigate()
   const [showArchived, setShowArchived] = useState(false)
+  const [coverageFilter, setCoverageFilter] = useState('')
   return (
     <div style={{ marginTop: '2rem', maxWidth: '1200px', marginLeft: 'auto', marginRight: 'auto', padding: '0 1rem' }}>
       <h2>Datasets</h2>
@@ -20,6 +21,33 @@ function DatasetTable({ datasets, onEdit, onDelete }) {
         >
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
+      </div>
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ marginRight: '0.5rem' }}>Filter by Coverage:</label>
+        <select
+          value={coverageFilter}
+          onChange={(e) => setCoverageFilter(e.target.value)}
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#222',
+            color: '#fff',
+            border: '1px solid #666',
+            borderRadius: '4px',
+            marginRight: '1rem'
+          }}
+        >
+          <option value="">All</option>
+          <option value="Pasco">Pasco</option>
+          <option value="Hillsborough">Hillsborough</option>
+          <option value="Hernando">Hernando</option>
+          <option value="Pinellas">Pinellas</option>
+          <option value="Sarasota">Sarasota</option>
+          <option value="Manatee">Manatee</option>
+          <option value="Citrus">Citrus</option>
+          <option value="Polk">Polk</option>
+          <option value="SWFWMD">SWFWMD</option>
+          <option value="Statewide">Statewide</option>
+        </select>
       </div>
       <div style={{ overflowX: 'auto', minWidth: '1000px' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -39,6 +67,7 @@ function DatasetTable({ datasets, onEdit, onDelete }) {
             {datasets?.length > 0 ? (
               datasets
                 .filter(ds => showArchived || ds.status !== 'Archived')
+                .filter(ds => !coverageFilter || (Array.isArray(ds.coverage) && ds.coverage.includes(coverageFilter)))
                 .map((ds, index) => (
                   <tr
                     key={ds.id}

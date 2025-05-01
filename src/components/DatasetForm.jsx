@@ -11,7 +11,7 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
     source_url: '',
     local_path: '',
     tags: '',
-    coverage: '',
+    coverage: [],
     last_updated: '',
     notes: '',
     owner: '',
@@ -31,7 +31,7 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
       setFormData({
         ...editingDataset,
         tags: editingDataset.tags?.join(', ') || '',
-        coverage: editingDataset.coverage?.join(', ') || '',
+        coverage: editingDataset.coverage || [],
         license: editingDataset.license || '',
         contact: editingDataset.contact || '',
         storage_location: editingDataset.storage_location || '',
@@ -62,7 +62,7 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
     const parsedData = {
       ...rest,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-      coverage: coverage ? coverage.split(',').map(cov => cov.trim()) : [],
+      coverage: formData.coverage || [],
       last_updated: formData.last_updated || null,
     }
 
@@ -86,7 +86,7 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
         source_url: '',
         local_path: '',
         tags: '',
-        coverage: '',
+        coverage: [],
         last_updated: '',
         notes: '',
         owner: '',
@@ -302,22 +302,37 @@ function DatasetForm({ fetchDatasets, editingDataset, setEditingDataset }) {
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        <label style={{ color: '#f0f0f0' }}>Coverage (comma separated):</label>
-        <input
-          type="text"
+        <label style={{ color: '#f0f0f0' }}>Coverage Area(s):</label>
+        <select
+          multiple
           name="coverage"
           value={formData.coverage}
-          onChange={handleChange}
+          onChange={(e) => {
+            const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
+            setFormData((prev) => ({ ...prev, coverage: selectedOptions }))
+          }}
           style={{
             width: '100%',
             padding: '10px',
+            height: '120px',
             backgroundColor: '#2a2a2a',
             border: '1px solid #444',
             color: '#f0f0f0',
             borderRadius: '4px',
             marginTop: '0.5rem'
           }}
-        />
+        >
+          <option value="Pasco">Pasco</option>
+          <option value="Hillsborough">Hillsborough</option>
+          <option value="Hernando">Hernando</option>
+          <option value="Pinellas">Pinellas</option>
+          <option value="Sarasota">Sarasota</option>
+          <option value="Manatee">Manatee</option>
+          <option value="Citrus">Citrus</option>
+          <option value="Polk">Polk</option>
+          <option value="SWFWMD">SWFWMD</option>
+          <option value="Statewide">Statewide</option>
+        </select>
       </div>
 
       <div style={{ marginBottom: '1rem' }}>

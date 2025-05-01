@@ -4,6 +4,7 @@ import { supabase } from '../services/supabaseClient'
 function Dashboard() {
   const [datasets, setDatasets] = useState([])
   const [owner, setOwner] = useState('FLDP')
+  const [coverageFilter, setCoverageFilter] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +29,9 @@ function Dashboard() {
     return diff > days
   }
 
-  const staleDatasets = datasets.filter(isStale)
+  const staleDatasets = datasets.filter(ds => {
+    return isStale(ds) && (!coverageFilter || (Array.isArray(ds.coverage) && ds.coverage.includes(coverageFilter)))
+  })
   const statusCounts = datasets
     .filter(ds => ds.update_type !== 'Static')
     .reduce((acc, ds) => {
@@ -46,6 +49,22 @@ function Dashboard() {
         <select value={owner} onChange={(e) => setOwner(e.target.value)} style={{ padding: '0.5rem' }}>
           <option value="FLDP">FLDP</option>
           <option value="Personal">GISNerd</option>
+        </select>
+      </div>
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ marginRight: '1rem' }}>Coverage:</label>
+        <select value={coverageFilter} onChange={(e) => setCoverageFilter(e.target.value)} style={{ padding: '0.5rem' }}>
+          <option value="">All</option>
+          <option value="Pasco">Pasco</option>
+          <option value="Hillsborough">Hillsborough</option>
+          <option value="Hernando">Hernando</option>
+          <option value="Pinellas">Pinellas</option>
+          <option value="Sarasota">Sarasota</option>
+          <option value="Manatee">Manatee</option>
+          <option value="Citrus">Citrus</option>
+          <option value="Polk">Polk</option>
+          <option value="SWFWMD">SWFWMD</option>
+          <option value="Statewide">Statewide</option>
         </select>
       </div>
 
