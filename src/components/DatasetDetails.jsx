@@ -43,7 +43,7 @@ function DatasetDetails() {
             ['Tags', dataset.tags?.join(', ')],
             ['Data Format', dataset.data_format],
             ['Source Type', dataset.source_type],
-            ['Source URL', dataset.source_url],
+            ['Source Path', dataset.source_path],
             ['Local Path', dataset.local_path],
             ['Last Updated', dataset.last_updated],
             ['Date Added', dataset.date_added],
