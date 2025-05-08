@@ -1,3 +1,4 @@
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 function DatasetTable({ datasets, onEdit, onDelete }) {
@@ -78,7 +79,6 @@ function DatasetTable({ datasets, onEdit, onDelete }) {
                 grouped[county].push(ds);
               });
               // Flatten into rows with a header row for each group
-              let rowIndex = 0;
               return Object.entries(grouped)
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([county, records]) => {
@@ -92,8 +92,9 @@ function DatasetTable({ datasets, onEdit, onDelete }) {
                           {isExpanded ? '▼' : '►'} {county}
                         </td>
                       </tr>
-                      {isExpanded && records.map((ds, idx) => {
-                        const index = rowIndex++;
+                      {isExpanded && records
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((ds, index) => {
                         return (
                           <tr
                             key={ds.id}
